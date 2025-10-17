@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Weather App</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script>
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (position) {
+            window.location.href = `/current?lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+          });
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      }
+    </script>
+  </head>
+  <body class="{{ weather_class }}">
+    <div class="container">
+      <h1>Weather App</h1>
+
+      <!-- Info Button -->
+      <button
+        onclick="window.open('https://www.linkedin.com/company/product-manager-accelerator', '_blank')"
+      >
+        Info
+      </button>
+
+      <!-- Weather Form -->
+      <form method="POST">
+        <input
+          type="text"
+          name="location"
+          placeholder="Enter City or ZIP"
+          required
+        />
+        <label>Start Date: <input type="date" name="start_date" /></label>
+        <label>End Date: <input type="date" name="end_date" /></label>
+        <button type="submit">Get Weather</button>
+        <button type="button" onclick="getLocation()">
+          Use Current Location
+        </button>
+      </form>
+
+      {% if weather %} {% if weather.error %}
+      <p class="error">{{ weather.error }}</p>
+      {% else %}
+      <div class="current-weather">
+        <h2>{{ weather.name }}</h2>
+        <p>{{ weather.weather[0].description }}</p>
+        <p>Temperature: {{ weather.main.temp }} °C</p>
+        <img
+          src="http://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@2x.png"
+        />
+        <p>
+          <a
+            href="https://www.youtube.com/results?search_query={{ weather.name }}"
+            target="_blank"
+            >YouTube Videos</a
+          >
+        </p>
+        <p>
+          <a
+            href="https://www.google.com/maps/search/{{ weather.name }}"
+            target="_blank"
+            >View on Google Maps</a
+          >
+        </p>
+      </div>
+      {% endif %} {% endif %} {% if forecast %}
+      <h3>5-Day Forecast</h3>
+      <div class="forecast">
+        {% for f in forecast %}
+        <div class="forecast-card">
+          <p>{{ f.dt_txt }}</p>
+          <img
+            src="http://openweathermap.org/img/wn/{{ f.weather[0].icon }}@2x.png"
+          />
+          <p>{{ f.weather[0].description }}</p>
+          <p>{{ f.main.temp }} °C</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Previous Records Table -->
+      <h3>Previous Records</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <th>Date</th>
+          <th>Temp</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+        {% for r in records %}
+        <tr>
+          <form method="POST" action="{{ url_for('update', id=r.id) }}">
+            <td>{{ r.location }}</td>
+            <td>{{ r.date }}</td>
+            <td><input type="text" name="temp" value="{{ r.temp }}" /></td>
+            <td>
+              <input
+                type="text"
+                name="description"
+                value="{{ r.description }}"
+              />
+            </td>
+            <td>
+              <button type="submit">Update</button>
+              <a href="{{ url_for('delete', id=r.id) }}">Delete</a>
+            </td>
+          </form>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <h3>Export</h3>
+      <a href="{{ url_for('export_json') }}" target="_blank">Export JSON</a> |
+      <a href="{{ url_for('export_csv') }}">Export CSV</a>
+    </div>
+  </body>
+</html>
