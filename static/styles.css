@@ -1,169 +1,326 @@
-/* Base styles */
+/* ===== Base Styles ===== */
+* {
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    transition: background 0.5s ease;
+  font-family: "Poppins", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #74b9ff, #a29bfe);
+  color: #222;
+  transition: background 0.6s ease;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Container */
-.container {
-    width: 90%;
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+/* ===== Layout Blocks ===== */
+.app-header,
+.app-footer {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Headings */
-h1 {
-    margin-bottom: 20px;
-    color: #333;
-}
-h2, h3 {
-    margin: 15px 0;
-    color: #444;
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
 }
 
-/* Form inputs */
-input[type=text], input[type=date] {
-    padding: 8px;
-    margin: 5px;
-    width: 150px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+.app-footer {
+  font-size: 0.9rem;
+  margin-top: auto;
 }
 
-button {
-    padding: 8px 15px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
+.app-main {
+  width: 90%;
+  max-width: 1000px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-button:hover {
-    background-color: #0056b3;
+/* ===== Reusable Card ===== */
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-a {
-    color: #007BFF;
-    text-decoration: none;
-    font-weight: bold;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
 }
 
-a:hover {
-    text-decoration: underline;
+/* ===== Buttons ===== */
+button,
+a.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Error message */
-.error {
-    color: red;
-    font-weight: bold;
-    margin: 10px 0;
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #00a8ff);
+  color: white;
 }
 
-/* Current weather */
+.btn-secondary {
+  background: linear-gradient(135deg, #636e72, #2d3436);
+  color: white;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.info-btn {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.info-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Form Section ===== */
+.weather-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.weather-form input[type="text"],
+.weather-form input[type="date"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.date-range {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ===== Weather Display ===== */
 .current-weather {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 10px;
-    background: rgba(200, 200, 255, 0.2);
-    display: inline-block;
+  text-align: center;
 }
 
-.current-weather img {
-    width: 100px;
-    height: 100px;
+.weather-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Forecast section */
-.forecast {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
+.weather-info img {
+  width: 90px;
+  height: 90px;
+  animation: float 2s ease-in-out infinite;
+}
+
+.temp {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.desc {
+  font-size: 1.1rem;
+  text-transform: capitalize;
+  color: #555;
+}
+
+.links {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.links a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* Floating icon animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ===== Forecast Section ===== */
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .forecast-card {
-    width: 150px;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(220, 220, 220, 0.3);
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  background: rgba(240, 248, 255, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.forecast-card:hover {
+  transform: translateY(-5px);
 }
 
 .forecast-card img {
-    width: 60px;
-    height: 60px;
+  width: 60px;
+  height: 60px;
 }
 
-/* Table for previous records */
+.forecast-card .date {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ===== Records Table ===== */
+.table-wrapper {
+  overflow-x: auto;
+}
+
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
 }
 
 th {
-    background-color: #007BFF;
-    color: white;
+  background: linear-gradient(135deg, #007bff, #00a8ff);
+  color: white;
 }
 
 td input {
-    width: 70px;
-    text-align: center;
+  width: 80px;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
+  background: #f1f1f1;
 }
 
-/* Export links */
-h3 + a {
-    margin: 0 10px;
+.btn-update {
+  background: #00b894;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
 }
 
-/* Weather background classes */
+.btn-delete {
+  background: #d63031;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* ===== Export Section ===== */
+.export-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.export-links a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.export-links a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Background Themes ===== */
 .sunny {
-    background: linear-gradient(to top, #ffe47a, #ffcb6b);
+  background: linear-gradient(135deg, #ffb347, #ffcc33);
 }
 
 .cloudy {
-    background: linear-gradient(to top, #d7d7d7, #f0f0f0);
+  background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+  color: white;
 }
 
 .rainy {
-    background: linear-gradient(to top, #4e5d6c, #7a8ca3);
-    color: white;
+  background: linear-gradient(135deg, #4b79a1, #283e51);
+  color: white;
 }
 
 .snowy {
-    background: linear-gradient(to top, #e0f7ff, #b3ecff);
+  background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
 }
 
-/* Responsive adjustments */
+/* ===== Responsive ===== */
 @media (max-width: 600px) {
-    .forecast {
-        flex-direction: column;
-        align-items: center;
-    }
+  .app-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-    input[type=text], input[type=date] {
-        width: 100%;
-    }
+  .forecast-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .forecast-card {
-        width: 80%;
-    }
+  .weather-form input[type="text"],
+  .weather-form input[type="date"] {
+    width: 100%;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  button, a.btn {
+    width: 100%;
+  }
 }

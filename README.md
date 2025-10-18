@@ -52,6 +52,19 @@ This weather app allows users to get **current weather** and **5-day forecasts**
 1. Clone the repository:
 
 ```bash
-git clone <YOUR_GITHUB_REPO_URL>
-cd weather-app
+# clone
+git clone https://github.com/Abhipatilap09/weather-app-abhishekpatil09.git
+cd weather-app-abhishekpatil09
+
+# create venv (Linux/macOS)
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# set env (example)
+export OWM_API_KEY="your_openweathermap_key"
+export FLASK_APP=app.py
+flask run
+# then open http://127.0.0.1:5000
+
 ```

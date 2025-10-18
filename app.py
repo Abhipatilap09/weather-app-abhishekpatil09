@@ -1,12 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response # ADDED make_response
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import csv
+import os 
+import io 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
+# 1. SECURITY & DEPLOYMENT: Load config from environment variables
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///weather.db') # Use DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_strong_development_secret_key') # ADDED SECRET_KEY
 db = SQLAlchemy(app)
 
 # Database model
@@ -38,7 +42,8 @@ def index():
     forecast = None
     weather_class = ''
     records = WeatherRecord.query.all()
-    api_key = '6d50389e627d2567d21e8820a19f91f1'  
+    # 1. SECURITY: Load API key from environment variable
+    api_key = os.environ.get('OPENWEATHER_API_KEY', '6d50389e627d2567d21e8820a19f91f1') # Fallback for local testing
 
     if request.method == 'POST':
         location = request.form['location']
@@ -89,7 +94,8 @@ def current_location():
     forecast = None
     weather_class = ''
     records = WeatherRecord.query.all()
-    api_key = '6d50389e627d2567d21e8820a19f91f1'  
+    # 1. SECURITY: Load API key from environment variable
+    api_key = os.environ.get('OPENWEATHER_API_KEY', '6d50389e627d2567d21e8820a19f91f1') # Fallback for local testing
     try:
         url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&appid={api_key}"
         res = requests.get(url).json()
@@ -152,16 +158,30 @@ def export_json():
 @app.route('/export/csv')
 def export_csv():
     records = WeatherRecord.query.all()
-    filename = "weather_export.csv"
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Location','Date','Temperature','Description','Icon'])
-        for r in records:
-            writer.writerow([r.location, r.date, r.temp, r.description, r.icon])
-    return f"CSV exported as {filename}"
+    
+    # 3. EXPORT FIX: Use io.StringIO to create an in-memory file for CSV data
+    si = io.StringIO()
+    cw = csv.writer(si)
+    
+    # Write header and data rows
+    cw.writerow(['Location','Date','Temperature','Description','Icon'])
+    for r in records:
+        cw.writerow([r.location, r.date, r.temp, r.description, r.icon])
+        
+    # Create a Flask response
+    output = make_response(si.getvalue())
+    
+    # Set headers to force a download by the browser
+    output.headers["Content-Disposition"] = "attachment; filename=weather_export.csv"
+    output.headers["Content-type"] = "text/csv"
+    
+    return output # Returns the file content to the browser
 
 # Run server
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+        
+    # 2. DEPLOYMENT FIX: Use environment variables for host and port 
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)

@@ -7,6 +7,7 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       function getLocation() {
         if (navigator.geolocation) {
@@ -19,109 +20,148 @@
       }
     </script>
   </head>
-  <body class="{{ weather_class }}">
-    <div class="container">
-      <h1>Weather App</h1>
 
-      <!-- Info Button -->
+  <body class="{{ weather_class }}">
+    <header class="app-header">
+      <h1>🌦️ Weather App</h1>
       <button
+        class="info-btn"
         onclick="window.open('https://www.linkedin.com/company/product-manager-accelerator', '_blank')"
       >
-        Info
+        ℹ️ Info
       </button>
+    </header>
 
-      <!-- Weather Form -->
-      <form method="POST">
-        <input
-          type="text"
-          name="location"
-          placeholder="Enter City or ZIP"
-          required
-        />
-        <label>Start Date: <input type="date" name="start_date" /></label>
-        <label>End Date: <input type="date" name="end_date" /></label>
-        <button type="submit">Get Weather</button>
-        <button type="button" onclick="getLocation()">
-          Use Current Location
-        </button>
-      </form>
+    <main class="app-main">
+      <!-- Search Section -->
+      <section class="search-section card">
+        <form method="POST" class="weather-form">
+          <input
+            type="text"
+            name="location"
+            placeholder="Enter City or ZIP"
+            required
+          />
+          <div class="date-range">
+            <label>Start: <input type="date" name="start_date" /></label>
+            <label>End: <input type="date" name="end_date" /></label>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="btn-primary">Get Weather</button>
+            <button type="button" class="btn-secondary" onclick="getLocation()">
+              Use Current Location
+            </button>
+          </div>
+        </form>
+      </section>
 
-      {% if weather %} {% if weather.error %}
-      <p class="error">{{ weather.error }}</p>
-      {% else %}
-      <div class="current-weather">
+      <!-- Weather Result -->
+      {% if weather %}
+      <section class="current-weather card">
+        {% if weather.error %}
+        <p class="error">{{ weather.error }}</p>
+        {% else %}
         <h2>{{ weather.name }}</h2>
-        <p>{{ weather.weather[0].description }}</p>
-        <p>Temperature: {{ weather.main.temp }} °C</p>
-        <img
-          src="http://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@2x.png"
-        />
-        <p>
+        <div class="weather-info">
+          <img
+            src="http://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@2x.png"
+            alt="Weather Icon"
+          />
+          <div>
+            <p class="temp">{{ weather.main.temp }} °C</p>
+            <p class="desc">{{ weather.weather[0].description }}</p>
+          </div>
+        </div>
+        <div class="links">
           <a
             href="https://www.youtube.com/results?search_query={{ weather.name }}"
             target="_blank"
-            >YouTube Videos</a
+            >🎥 YouTube Videos</a
           >
-        </p>
-        <p>
           <a
             href="https://www.google.com/maps/search/{{ weather.name }}"
             target="_blank"
-            >View on Google Maps</a
+            >📍 View on Google Maps</a
           >
-        </p>
-      </div>
-      {% endif %} {% endif %} {% if forecast %}
-      <h3>5-Day Forecast</h3>
-      <div class="forecast">
-        {% for f in forecast %}
-        <div class="forecast-card">
-          <p>{{ f.dt_txt }}</p>
-          <img
-            src="http://openweathermap.org/img/wn/{{ f.weather[0].icon }}@2x.png"
-          />
-          <p>{{ f.weather[0].description }}</p>
-          <p>{{ f.main.temp }} °C</p>
         </div>
-        {% endfor %}
-      </div>
+        {% endif %}
+      </section>
       {% endif %}
 
-      <!-- Previous Records Table -->
-      <h3>Previous Records</h3>
-      <table>
-        <tr>
-          <th>Location</th>
-          <th>Date</th>
-          <th>Temp</th>
-          <th>Description</th>
-          <th>Actions</th>
-        </tr>
-        {% for r in records %}
-        <tr>
-          <form method="POST" action="{{ url_for('update', id=r.id) }}">
-            <td>{{ r.location }}</td>
-            <td>{{ r.date }}</td>
-            <td><input type="text" name="temp" value="{{ r.temp }}" /></td>
-            <td>
-              <input
-                type="text"
-                name="description"
-                value="{{ r.description }}"
-              />
-            </td>
-            <td>
-              <button type="submit">Update</button>
-              <a href="{{ url_for('delete', id=r.id) }}">Delete</a>
-            </td>
-          </form>
-        </tr>
-        {% endfor %}
-      </table>
+      <!-- Forecast -->
+      {% if forecast %}
+      <section class="forecast card">
+        <h3>5-Day Forecast</h3>
+        <div class="forecast-grid">
+          {% for f in forecast %}
+          <div class="forecast-card">
+            <p class="date">{{ f.dt_txt }}</p>
+            <img
+              src="http://openweathermap.org/img/wn/{{ f.weather[0].icon }}@2x.png"
+              alt="Forecast Icon"
+            />
+            <p class="desc">{{ f.weather[0].description }}</p>
+            <p class="temp">{{ f.main.temp }} °C</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
 
-      <h3>Export</h3>
-      <a href="{{ url_for('export_json') }}" target="_blank">Export JSON</a> |
-      <a href="{{ url_for('export_csv') }}">Export CSV</a>
-    </div>
+      <!-- Records -->
+      <section class="records card">
+        <h3>📋 Previous Records</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Temp</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in records %}
+              <tr>
+                <form method="POST" action="{{ url_for('update', id=r.id) }}">
+                  <td>{{ r.location }}</td>
+                  <td>{{ r.date }}</td>
+                  <td><input type="text" name="temp" value="{{ r.temp }}" /></td>
+                  <td>
+                    <input
+                      type="text"
+                      name="description"
+                      value="{{ r.description }}"
+                    />
+                  </td>
+                  <td>
+                    <button type="submit" class="btn-update">Update</button>
+                    <a href="{{ url_for('delete', id=r.id) }}" class="btn-delete"
+                      >Delete</a
+                    >
+                  </td>
+                </form>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Export -->
+      <section class="export card">
+        <h3>⬇️ Export</h3>
+        <div class="export-links">
+          <a href="{{ url_for('export_json') }}" target="_blank">Export JSON</a>
+          <a href="{{ url_for('export_csv') }}">Export CSV</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>🌍 Built by Abhishek Patil</p>
+    </footer>
   </body>
 </html>
